@@ -47,6 +47,72 @@ h1 {
   transition: text-shadow 0.6s ease;
 }
 
+.repo-embed {
+  width: fit-content;
+  max-width: 100%;
+  margin: 1rem auto 0.2rem;
+  padding: 0.32rem 0.55rem;
+  border: 1px solid #4a4232;
+  border-radius: 999px;
+  background: rgba(212, 197, 160, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+  text-decoration: none;
+  color: #d4c5a0;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.repo-embed:hover {
+  border-color: rgba(212, 197, 160, 0.45);
+  background: rgba(212, 197, 160, 0.1);
+}
+
+.repo-embed-icon {
+  color: #a99a78;
+  flex-shrink: 0;
+}
+
+.repo-embed-text {
+  font-family: 'Courier Prime', 'Courier New', monospace;
+  font-size: 0.84rem;
+  color: #d4c5a0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .repo-embed {
+    max-width: 100%;
+  }
+}
+
+.writeup {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(212, 197, 160, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.writeup-title {
+  font-family: 'Libre Baskerville', 'Georgia', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a99a78;
+  text-align: center;
+}
+
+.writeup-text {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #b8aa8b;
+  text-align: justify;
+}
+
 /* ── Input row with random button ── */
 .input-row {
   display: flex;

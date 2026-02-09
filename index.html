@@ -1,98 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Human Friendly Colours</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Friendly Colours</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="ambient-glow" id="ambientGlow"></div>
+  <div class="ambient-glow" id="ambientGlow"></div>
 
-<div class="app">
-  <h1 id="mainTitle">Human Friendly Colours</h1>
+  <div class="app">
+    <h1 id="mainTitle">Human Friendly Colours</h1>
 
-  <div class="input-row">
-    <input type="text" id="phraseInput" placeholder="Enter a colour phrase..." spellcheck="false" autocomplete="off">
-    <button id="randomBtn" title="Random colour">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="1" y="1" width="22" height="22" rx="3"/>
-        <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
-        <circle cx="16" cy="8" r="1.5" fill="currentColor"/>
-        <circle cx="8" cy="16" r="1.5" fill="currentColor"/>
-        <circle cx="16" cy="16" r="1.5" fill="currentColor"/>
-        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-      </svg>
-    </button>
-  </div>
+    <div class="input-row">
+      <input type="text" id="phraseInput" placeholder="Enter a colour phrase..." spellcheck="false" autocomplete="off">
+      <button id="randomBtn" title="Random colour">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="1" width="22" height="22" rx="3" />
+          <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+          <circle cx="16" cy="8" r="1.5" fill="currentColor" />
+          <circle cx="8" cy="16" r="1.5" fill="currentColor" />
+          <circle cx="16" cy="16" r="1.5" fill="currentColor" />
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+        </svg>
+      </button>
+    </div>
 
-  <div class="main-row">
-    <div class="left-col panel">
-      <div class="picker-row">
-        <div class="sv-picker">
-          <canvas id="svCanvas" width="256" height="256"></canvas>
-          <div class="sv-marker" id="svMarker"></div>
+    <div class="main-row">
+      <div class="left-col panel">
+        <div class="picker-row">
+          <div class="sv-picker">
+            <canvas id="svCanvas" width="256" height="256"></canvas>
+            <div class="sv-marker" id="svMarker"></div>
+          </div>
+          <div class="hue-slider">
+            <canvas id="hueCanvas" width="30" height="256"></canvas>
+            <div class="hue-marker" id="hueMarker"></div>
+          </div>
         </div>
-        <div class="hue-slider">
-          <canvas id="hueCanvas" width="30" height="256"></canvas>
-          <div class="hue-marker" id="hueMarker"></div>
+        <div class="rgb-sliders">
+          <div class="rgb-row">
+            <label class="rgb-label rgb-r">R</label>
+            <input type="range" id="sliderR" min="0" max="255" value="255" class="rgb-input rgb-r">
+            <span id="valR" class="rgb-val">255</span>
+          </div>
+          <div class="rgb-row">
+            <label class="rgb-label rgb-g">G</label>
+            <input type="range" id="sliderG" min="0" max="255" value="0" class="rgb-input rgb-g">
+            <span id="valG" class="rgb-val">0</span>
+          </div>
+          <div class="rgb-row">
+            <label class="rgb-label rgb-b">B</label>
+            <input type="range" id="sliderB" min="0" max="255" value="0" class="rgb-input rgb-b">
+            <span id="valB" class="rgb-val">0</span>
+          </div>
         </div>
       </div>
-      <div class="rgb-sliders">
-        <div class="rgb-row">
-          <label class="rgb-label rgb-r">R</label>
-          <input type="range" id="sliderR" min="0" max="255" value="255" class="rgb-input rgb-r">
-          <span id="valR" class="rgb-val">255</span>
+
+      <div class="right-col">
+        <div class="info-panel panel">
+          <div class="info-row">
+            <span id="phraseDisplay">Pick a colour</span>
+            <button class="copy-btn" data-target="phraseDisplay" title="Copy colour phrase">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            </button>
+          </div>
+          <div class="info-row">
+            <span id="hexDisplay"></span>
+            <button class="copy-btn" data-target="hexDisplay" title="Copy hex value">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            </button>
+          </div>
+          <div class="info-row">
+            <span id="rgbDisplay"></span>
+            <button class="copy-btn" data-target="rgbDisplay" title="Copy RGB value">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="rgb-row">
-          <label class="rgb-label rgb-g">G</label>
-          <input type="range" id="sliderG" min="0" max="255" value="0" class="rgb-input rgb-g">
-          <span id="valG" class="rgb-val">0</span>
-        </div>
-        <div class="rgb-row">
-          <label class="rgb-label rgb-b">B</label>
-          <input type="range" id="sliderB" min="0" max="255" value="0" class="rgb-input rgb-b">
-          <span id="valB" class="rgb-val">0</span>
+        <div class="panel preview-panel">
+          <div id="colourPreview"></div>
         </div>
       </div>
     </div>
 
-    <div class="right-col">
-      <div class="info-panel panel">
-        <div class="info-row">
-          <span id="phraseDisplay">Pick a colour</span>
-          <button class="copy-btn" data-target="phraseDisplay" title="Copy colour phrase">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-        </div>
-        <div class="info-row">
-          <span id="hexDisplay"></span>
-          <button class="copy-btn" data-target="hexDisplay" title="Copy hex value">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-        </div>
-        <div class="info-row">
-          <span id="rgbDisplay"></span>
-          <button class="copy-btn" data-target="rgbDisplay" title="Copy RGB value">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="panel preview-panel">
-        <div id="colourPreview"></div>
-      </div>
+    <div class="history-section" id="historySection">
+      <div class="history-label">Recent</div>
+      <div class="history-swatches" id="historySwatches"></div>
     </div>
+
+    <div class="writeup">
+      <div class="writeup-title">About</div>
+      <p class="writeup-text">
+        Memorable Colours is a system for turning 16-bit colours into
+        human-readable names that are easy to remember, communicate, and reuse.
+        While values like "#1b1d44" or "(27, 29, 68)" are exact, they are difficult
+        for humans to recall or discuss. Names like "Gloomy Rich Denim" are not.
+      </p>
+      <p class="writeup-text">
+        That mapping takes 16-bit HSV colours (0-255 hue, 0-15 saturation, 0-15 value) and uses a dictionary
+        to map each value to a relevant word. This allows the entire colour spectrum to be encoded into 3-4
+        word phrases, and converted back into RGB and Hex for display. The result is easy to remember, easy to share,
+        and still precise enough for consistent colour work.
+      </p>
+    </div>
+
+    <a class="repo-embed" href="https://github.com/a-lothian/Human-Friendly-Colours" target="_blank"
+      rel="noopener noreferrer" aria-label="Open Human Friendly Colours GitHub repository">
+      <span class="repo-embed-icon" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 .5C5.65.5.5 5.7.5 12.12c0 5.13 3.3 9.47 7.88 11 .58.1.8-.25.8-.57 0-.28-.02-1.2-.02-2.18-2.9.54-3.66-.72-3.9-1.38-.14-.35-.74-1.38-1.26-1.66-.42-.22-1.02-.76-.02-.78.94-.02 1.62.88 1.84 1.24 1.08 1.8 2.8 1.3 3.48.98.1-.8.42-1.3.76-1.6-2.58-.3-5.28-1.32-5.28-5.82 0-1.28.46-2.34 1.2-3.16-.12-.3-.52-1.5.12-3.12 0 0 .98-.32 3.2 1.2a11 11 0 0 1 5.82 0c2.22-1.54 3.2-1.2 3.2-1.2.64 1.62.24 2.82.12 3.12.74.82 1.2 1.86 1.2 3.16 0 4.52-2.72 5.52-5.3 5.82.42.36.78 1.04.78 2.12 0 1.52-.02 2.74-.02 3.12 0 .32.22.7.8.56a11.64 11.64 0 0 0 7.88-11C23.5 5.7 18.35.5 12 .5z" />
+        </svg>
+      </span>
+      <span class="repo-embed-text">a-lothian/Human-Friendly-Colours</span>
+    </a>
   </div>
 
-  <div class="history-section" id="historySection">
-    <div class="history-label">Recent</div>
-    <div class="history-swatches" id="historySwatches"></div>
-  </div>
-</div>
+  <div class="toast" id="toast"></div>
 
-<div class="toast" id="toast"></div>
-
-<script src="main.js"></script>
+  <script src="main.js"></script>
 </body>
+
 </html>
