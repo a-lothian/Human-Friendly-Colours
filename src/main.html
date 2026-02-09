@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColourWords</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+  <h1>Human Friendly Colours</h1>
+
+  <input type="text" id="phraseInput" placeholder="Enter a colour phrase..." spellcheck="false" autocomplete="off">
+
+  <div class="main-row">
+    <div class="left-col panel">
+      <div class="picker-row">
+        <div class="sv-picker">
+          <canvas id="svCanvas" width="256" height="256"></canvas>
+          <div class="sv-marker" id="svMarker"></div>
+        </div>
+        <div class="hue-slider">
+          <canvas id="hueCanvas" width="30" height="256"></canvas>
+          <div class="hue-marker" id="hueMarker"></div>
+        </div>
+      </div>
+      <div class="rgb-sliders">
+        <div class="rgb-row">
+          <label class="rgb-label rgb-r">R</label>
+          <input type="range" id="sliderR" min="0" max="255" value="255" class="rgb-input rgb-r">
+          <span id="valR" class="rgb-val">255</span>
+        </div>
+        <div class="rgb-row">
+          <label class="rgb-label rgb-g">G</label>
+          <input type="range" id="sliderG" min="0" max="255" value="0" class="rgb-input rgb-g">
+          <span id="valG" class="rgb-val">0</span>
+        </div>
+        <div class="rgb-row">
+          <label class="rgb-label rgb-b">B</label>
+          <input type="range" id="sliderB" min="0" max="255" value="0" class="rgb-input rgb-b">
+          <span id="valB" class="rgb-val">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="info-panel panel">
+        <div class="info-row">
+          <span id="phraseDisplay">Pick a colour</span>
+          <button class="copy-btn" data-target="phraseDisplay" title="Copy colour phrase">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+        <div class="info-row">
+          <span id="hexDisplay"></span>
+          <button class="copy-btn" data-target="hexDisplay" title="Copy hex value">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+        <div class="info-row">
+          <span id="rgbDisplay"></span>
+          <button class="copy-btn" data-target="rgbDisplay" title="Copy RGB value">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel preview-panel">
+        <div id="colourPreview"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
