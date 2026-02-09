@@ -197,6 +197,72 @@ function updateSVMarker() {
 updateSVMarker();
 updateHueMarker();
 
+// ── Ambient glow & preview shadow ──
+const ambientGlow = document.getElementById('ambientGlow');
+const mainTitle = document.getElementById('mainTitle');
+
+function updateAmbientEffects(hex) {
+  ambientGlow.style.setProperty('--glow-color', hex);
+  mainTitle.style.textShadow = `0 0 30px ${hex}44`;
+  document.getElementById('colourPreview').style.boxShadow =
+    `0 0 25px ${hex}55, inset 0 0 20px ${hex}22`;
+}
+
+// ── Color history ──
+const colorHistory = [];
+const MAX_HISTORY = 16;
+const historySection = document.getElementById('historySection');
+const historySwatches = document.getElementById('historySwatches');
+let lastHistoryHex = '';
+
+function addToHistory(hex, hue, sat, val) {
+  if (hex === lastHistoryHex) return;
+  lastHistoryHex = hex;
+
+  // Deduplicate
+  const existing = colorHistory.findIndex(c => c.hex === hex);
+  if (existing !== -1) colorHistory.splice(existing, 1);
+
+  colorHistory.unshift({ hex, hue, sat, val });
+  if (colorHistory.length > MAX_HISTORY) colorHistory.pop();
+
+  renderHistory();
+}
+
+function renderHistory() {
+  historySwatches.innerHTML = '';
+  colorHistory.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'history-swatch';
+    el.style.backgroundColor = c.hex;
+    el.title = c.hex;
+    el.addEventListener('click', () => {
+      currentHue = c.hue;
+      currentSat = c.sat;
+      currentVal = c.val;
+      drawSVCanvas((currentHue / 256) * 360);
+      updateHueMarker();
+      updateSVMarker();
+      updateDisplay();
+    });
+    historySwatches.appendChild(el);
+  });
+  if (colorHistory.length > 0) {
+    historySection.classList.add('visible');
+  }
+}
+
+// ── Toast notifications ──
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+
+function showToast(message) {
+  toastEl.textContent = message;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1500);
+}
+
 function updateDisplay(skipRgbSync) {
   // Quantized values for preview, phrase, and hex
   const qHue = Math.round(currentHue) % 256;
@@ -229,6 +295,9 @@ function updateDisplay(skipRgbSync) {
     `linear-gradient(to right, rgb(${r},0,${b}), rgb(${r},255,${b}))`;
   document.getElementById('sliderB').style.background =
     `linear-gradient(to right, rgb(${r},${g},0), rgb(${r},${g},255))`;
+
+  // Update ambient effects
+  updateAmbientEffects(hex);
 }
 updateDisplay();
 
@@ -245,7 +314,10 @@ function pickFromHue(e) {
 let hueDown = false;
 hueCanvas.addEventListener('mousedown', e => { hueDown = true; pickFromHue(e); });
 window.addEventListener('mousemove', e => { if (hueDown) pickFromHue(e); });
-window.addEventListener('mouseup', () => { hueDown = false; });
+window.addEventListener('mouseup', () => {
+  if (hueDown) addCurrentToHistory();
+  hueDown = false;
+});
 
 // ── SV picker interaction ──
 function pickFromSV(e) {
@@ -261,7 +333,19 @@ function pickFromSV(e) {
 let svDown = false;
 svCanvas.addEventListener('mousedown', e => { svDown = true; pickFromSV(e); });
 window.addEventListener('mousemove', e => { if (svDown) pickFromSV(e); });
-window.addEventListener('mouseup', () => { svDown = false; });
+window.addEventListener('mouseup', () => {
+  if (svDown) addCurrentToHistory();
+  svDown = false;
+});
+
+function addCurrentToHistory() {
+  const qHue = Math.round(currentHue) % 256;
+  const qSat = Math.min(15, Math.max(0, Math.round(currentSat)));
+  const qVal = Math.min(15, Math.max(0, Math.round(currentVal)));
+  const { h, s, v } = indicesToHsv(qHue, qSat, qVal);
+  const [r, g, b] = hsvToRgb(h, s, v);
+  addToHistory(rgbToHex(r, g, b), currentHue, currentSat, currentVal);
+}
 
 // ── Text input decoding ──
 const phraseInput = document.getElementById('phraseInput');
@@ -300,6 +384,7 @@ phraseInput.addEventListener('input', () => {
   updateHueMarker();
   updateSVMarker();
   updateDisplay();
+  addCurrentToHistory();
 });
 
 // ── RGB slider interaction ──
@@ -317,11 +402,18 @@ function onRgbSliderInput() {
   updateDisplay(true);
 }
 
+function onRgbSliderChange() {
+  addCurrentToHistory();
+}
+
 document.getElementById('sliderR').addEventListener('input', onRgbSliderInput);
 document.getElementById('sliderG').addEventListener('input', onRgbSliderInput);
 document.getElementById('sliderB').addEventListener('input', onRgbSliderInput);
+document.getElementById('sliderR').addEventListener('change', onRgbSliderChange);
+document.getElementById('sliderG').addEventListener('change', onRgbSliderChange);
+document.getElementById('sliderB').addEventListener('change', onRgbSliderChange);
 
-// ── Copy buttons ──
+// ── Copy buttons with toast ──
 document.querySelectorAll('.copy-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const target = document.getElementById(btn.dataset.target);
@@ -330,5 +422,58 @@ document.querySelectorAll('.copy-btn').forEach(btn => {
     navigator.clipboard.writeText(text);
     btn.classList.add('copied');
     setTimeout(() => btn.classList.remove('copied'), 1000);
+    showToast(`Copied: ${text}`);
   });
+});
+
+// ── Random colour button ──
+const randomBtn = document.getElementById('randomBtn');
+
+function animateToColor(targetHue, targetSat, targetVal, duration) {
+  const startHue = currentHue;
+  const startSat = currentSat;
+  const startVal = currentVal;
+  const startTime = performance.now();
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(1, elapsed / duration);
+    // Ease out cubic
+    const ease = 1 - Math.pow(1 - t, 3);
+
+    currentHue = startHue + (targetHue - startHue) * ease;
+    currentSat = startSat + (targetSat - startSat) * ease;
+    currentVal = startVal + (targetVal - startVal) * ease;
+
+    drawSVCanvas((currentHue / 256) * 360);
+    updateHueMarker();
+    updateSVMarker();
+    updateDisplay();
+
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      addCurrentToHistory();
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+randomBtn.addEventListener('click', () => {
+  randomBtn.classList.remove('spinning');
+  void randomBtn.offsetWidth; // force reflow
+  randomBtn.classList.add('spinning');
+
+  const targetHue = Math.random() * 255;
+  const targetSat = 6 + Math.random() * 9; // avoid very desaturated
+  const targetVal = 4 + Math.random() * 11; // avoid very dark/light extremes
+  animateToColor(targetHue, targetSat, targetVal, 400);
+});
+
+// Keyboard shortcut: spacebar for random (when not in input)
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && document.activeElement !== phraseInput) {
+    e.preventDefault();
+    randomBtn.click();
+  }
 });
