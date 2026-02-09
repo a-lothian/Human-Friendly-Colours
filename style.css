@@ -30,7 +30,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 690px;
+  max-width: 690px;
   position: relative;
   z-index: 1;
 }
@@ -187,13 +187,14 @@ h1 {
 .main-row {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .left-col {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex-shrink: 0;
 }
 
 .picker-row {
@@ -251,7 +252,6 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-width: 0;
 }
 
 .info-panel {
@@ -287,7 +287,6 @@ h1 {
   font-size: 1.35rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  white-space: nowrap;
   transition: color 0.3s;
 }
 
