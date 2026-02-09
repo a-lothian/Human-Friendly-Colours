@@ -350,17 +350,33 @@ function addCurrentToHistory() {
 // ── Text input decoding ──
 const phraseInput = document.getElementById('phraseInput');
 
-phraseInput.addEventListener('input', () => {
-  const raw = phraseInput.value.trim();
-  if (!raw) {
-    phraseInput.className = '';
-    return;
+function stringToColour(phraseInput) {
+  const raw = phraseInput.value;
+
+  // Does it look like a hex code? (with or without #)
+  const parts = /#?([0-9a-fA-F]{6})/g.exec(raw);
+  if(parts) {
+    const hex = parts[1];
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    const { h, s, v } = rgbToHsv(r, g, b);
+    currentHue = (h / 360) * 255;
+    currentSat = s * 15;
+    currentVal = v * 15;
+    const hueIdx = Math.round(currentHue) % 256;
+    const satIdx = Math.round(currentSat);
+    const valIdx = Math.round(currentVal);
+    return {
+      hueIdx,
+      satIdx,
+      valIdx
+    }
   }
 
   const words = raw.split(/\s+/);
   if (words.length < 3) {
-    phraseInput.className = 'invalid';
-    return;
+    return null;
   }
 
   const brightnessWord = words[0].toLowerCase();
@@ -372,14 +388,30 @@ phraseInput.addEventListener('input', () => {
   const hueIdx = HUE_LOOKUP[hueWord];
 
   if (valIdx === undefined || satIdx === undefined || hueIdx === undefined) {
-    phraseInput.className = 'invalid';
+    return null;
+  }
+  return { hueIdx, satIdx, valIdx };
+}
+
+
+phraseInput.addEventListener('input', () => {
+  const raw = phraseInput.value.trim();
+  if (!raw) {
+    phraseInput.className = '';
     return;
   }
 
+  const result = stringToColour(phraseInput);
+  if (!result) {
+    phraseInput.className = 'invalid';
+    return;
+  }
   phraseInput.className = 'valid';
-  currentHue = hueIdx;
-  currentSat = satIdx;
-  currentVal = valIdx;
+
+  currentHue = result.hueIdx;
+  currentSat = result.satIdx;
+  currentVal = result.valIdx;
+
   drawSVCanvas((currentHue / 256) * 360);
   updateHueMarker();
   updateSVMarker();
